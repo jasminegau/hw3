@@ -91,7 +91,7 @@ Node* llfilter(Node* head, Comp pred)
     head->next = llfilter(head->next, pred);
     
     // Check if the current node meets the criteria for removal
-    if (pred(head->data)) {
+    if (pred(head->val)) {
         Node* temp = head;
         head = head->next;
         delete temp;
