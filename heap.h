@@ -2,6 +2,7 @@
 #define HEAP_H
 #include <functional>
 #include <stdexcept>
+#include <algorithm>
 
 template <typename T, typename PComparator = std::less<T> >
 class Heap
@@ -15,7 +16,7 @@ public:
    *          as an argument and returns a bool if the first argument has
    *          priority over the second.
    */
-  Heap(int m=2, PComparator c = PComparator());
+  Heap(int m = 2, PComparator c = PComparator());
 
   /**
   * @brief Destroy the Heap object
@@ -61,14 +62,14 @@ public:
 
 private:
   /// Add whatever helper functions and data members you need below
-
-
-
-
+  std::vector<T> data;
+  int children;
+  PComparator comp;
 };
 
 // Add implementation of member functions here
-
+template <typename T, typename PComparator>
+Heap<T,PComparator>::Heap(int m, PComparator c) : children(m), comp(c) {}
 
 // We will start top() for you to handle the case of 
 // calling top on an empty heap
@@ -81,14 +82,11 @@ T const & Heap<T,PComparator>::top() const
     // ================================
     // throw the appropriate exception
     // ================================
-
-
+    throw std::out_of_range("heap is empty");
   }
   // If we get here we know the heap has at least 1 item
   // Add code to return the top element
-
-
-
+  return data[0];
 }
 
 
@@ -101,15 +99,72 @@ void Heap<T,PComparator>::pop()
     // ================================
     // throw the appropriate exception
     // ================================
-
+    throw std::out_of_range("heap is empty");
 
   }
+  std::swap(data[0], data[(data.size() - 1)]);
+  data.pop_back();
+  size_t left = 0;
+  size_t right = 0;
+  int parent = 0;
+  while (true)
+  {
+    left = children * parent + 1;
+    right = std::min(left + children, data.size());
 
+    if (left >= data.size()) {
+      break;
+    }
 
+    // Find the index of the child with the highest priority
+    size_t maxChildIndex = left;
+    for (size_t i = left + 1; i < right; ++i) {
+      if (comp(data[i], data[maxChildIndex])) {
+          maxChildIndex = i;
+      }
+    }
 
+    // Check if the parent's priority is lower than the highest priority child
+    if (comp(data[maxChildIndex], data[parent])) {
+      std::swap(data[parent], data[maxChildIndex]);
+      parent = maxChildIndex;
+    } else {
+      break;
+    }
+  }
 }
 
+template <typename T, typename PComparator>
+void Heap<T,PComparator>::push(const T& item){
+  data.push_back(item);
+    size_t index = data.size() - 1;
+    while (index != 0)
+    {
+        size_t parent_index = (index - 1) / children;
+        T &current = data[index];
+        T &parent = data[parent_index];
+        if (!comp(current, parent))
+        {
+            break;
+        }
+        std::swap(current, parent);
+        index = parent_index;
+    }
+}
 
+template <typename T, typename PComparator>
+bool Heap<T,PComparator>::empty() const{
+  return data.empty();
+}
+
+template <typename T, typename PComparator>
+size_t Heap<T,PComparator>::size() const{
+  return data.size();
+}
+
+template <typename T, typename PComparator>
+Heap<T,PComparator>::~Heap() {
+    // Destructor implementation (if needed)
+}
 
 #endif
-
