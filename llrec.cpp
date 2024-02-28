@@ -5,6 +5,9 @@
 //*********************************************
 
 void llpivot(Node *&head, Node *&smaller, Node *&larger, int pivot){
+    smaller = nullptr; // Set smaller to nullptr
+    larger = nullptr;  // Set larger to nullptr
+    
     if (head==nullptr){
         return;
     } else if (head->val > pivot){
@@ -17,3 +20,4 @@ void llpivot(Node *&head, Node *&smaller, Node *&larger, int pivot){
         llpivot(head, smaller->next, larger, pivot);
     }
 }
+
